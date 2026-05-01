@@ -10,7 +10,7 @@ class Solution {
         int maxRes = f0;
         int lastSum = f0;
         for(int i = 1; i < n; i++){
-            int tmp = numSum + lastSum - (n * nums[n - i]);// n - i first value n - 1
+            int tmp = numSum + lastSum - (n * nums[n - i]);
             maxRes = Math.max(maxRes, tmp);
             lastSum = tmp;
         }
