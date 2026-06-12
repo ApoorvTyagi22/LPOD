@@ -9,7 +9,8 @@ class Solution {
         up[node][0] = parent;
 
         for(int nei : adj.get(node)){
-            if(depth[nei] != -1){
+            if(nei == parent) continue; 
+            if(depth[nei] == -1){
                 depth[nei] = depth[node] + 1; 
                 dfs(nei, node);
             }
@@ -47,6 +48,15 @@ class Solution {
         return up[u][0];
     }
 
+    public void buildAncestorTable(){
+        for(int j = 1; j < cols; j++){
+            for(int node = 0; node < rows; node++){
+                if(up[node][j - 1] == -1) continue; 
+                up[node][j] = up[up[node][j - 1]][j-1];
+            }
+        }
+    }
+
 
     public int[] assignEdgeWeights(int[][] edges, int[][] queries) {
         this.adj = new ArrayList<>();
@@ -59,6 +69,7 @@ class Solution {
         this.up = new int[rows][cols];
         this.depth = new int[n];
         Arrays.fill(depth, -1);
+        
 
         for(int[] edge : edges){
             int u = edge[0] - 1;
@@ -69,18 +80,24 @@ class Solution {
 
         depth[0] = 0;
         dfs(0, -1);
-        int[] res = new int[queries.length + 1];
+        buildAncestorTable();
+        int[] power = new int[n + 1];
+        power[0] = 1;
+        for(int i = 1; i <= n; i++){
+            power[i] = (2 * power[i - 1]) % MOD; 
+        }
+
+        int[] res = new int[queries.length];
         int idx = 0;
         for(int[] query : queries){
-            int u = query[0];
-            int v = query[1];
-            if(depth[u] == depth[v]){
-                res[idx] = 0;
-                continue; 
-            }
+            int u = query[0] - 1;
+            int v = query[1] - 1;
+            if(u == v){ res[idx++] = 0; continue; }   
             int lca_u_v = lca(u, v);
-            int d = (depth[u] + depth[v] - 2 * lca_u_v) % MOD;
+            int d = depth[u] + depth[v] - 2 * depth[lca_u_v];
+            res[idx] = power[d - 1];
             idx++;
+            
         }
 
         return res; 
