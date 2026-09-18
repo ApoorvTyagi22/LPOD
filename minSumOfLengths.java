@@ -20,4 +20,4 @@ class Solution {
         }
         return ans == n + 1 ? -1 : ans;
     }
-}
+}c
